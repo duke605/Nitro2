@@ -1,11 +1,16 @@
-import asyncio, sqlite3, os
+import asyncio, sqlite3, os, psutil
+from datetime import datetime
 from discord.ext import commands
 from env import env
 
 bot = commands.Bot(command_prefix=env['COMMAND_PREFIX'])
+
 bot.db_connection = sqlite3.connect('nitro.db')
 bot.db_connection.row_factory = sqlite3.Row
 bot.db_connection.isolation_level = None
+
+bot.uptime = datetime.utcnow()
+bot.process = psutil.Process()
 
 @bot.event
 async def on_ready():

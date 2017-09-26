@@ -42,7 +42,10 @@ class Game:
         e.add_field(name='Command User', value=ctx.message.author.mention)
         e.add_field(name='Command Channel', value=ctx.message.channel.mention)
 
-        await self.bot.send_message(self.bot.get_channel('361729723555905538'), None, embed=e)
+        if ctx.message.server.id == '223233024127533056':
+            await self.bot.send_message(self.bot.get_channel('361729723555905538'), None, embed=e)
+        else:
+            print(error)
 
 
     @commands.command(pass_context=True, description='Unassociates your Discord account with a NitroType account.')
