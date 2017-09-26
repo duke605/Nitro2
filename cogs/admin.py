@@ -31,7 +31,7 @@ class Admin:
     async def sudo(self):
         pass
 
-    @sudo.command(pass_context=True)
+    @sudo.command(pass_context=True, aliases=['reg'])
     async def register(self, ctx, *, msg):
         parser = Arguments(allow_abbrev=True, prog='sudo register')
         parser.add_argument('user', type=choices.user(ctx.message.server), help='The Discord user you wish to associate a Nitro Type account to.')
@@ -62,7 +62,7 @@ class Admin:
         self.con.execute('INSERT INTO users VALUES (?, ?)', (args.user.id, racer.username))
         await self.bot.add_reaction(ctx.message, '\U00002705')
 
-    @sudo.command(pass_context=True)
+    @sudo.command(pass_context=True, aliases=['unreg'])
     async def unregister(self, ctx, *, msg):
         parser = Arguments(allow_abbrev=True, prog='sudo register')
         parser.add_argument('user', type=choices.user(ctx.message.server), help='The Discord user you wish to unlink a Nitro Type account from.')
