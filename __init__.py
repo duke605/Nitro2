@@ -3,7 +3,7 @@ from discord.ext import commands
 from env import env
 
 bot = commands.Bot(command_prefix=env['COMMAND_PREFIX'])
-bot.db_connection = sqlite3.connect(f'{env["PWD"]}/nitro.db')
+bot.db_connection = sqlite3.connect('nitro.db')
 bot.db_connection.row_factory = sqlite3.Row
 bot.db_connection.isolation_level = None
 
@@ -38,7 +38,7 @@ async def reload(ctx, ext: str, use_prefix=True):
     await bot.add_reaction(ctx.message, '\U00002705')
 
 # Loading commands
-cogs = [file.split('.')[0] for file in os.listdir(f'{env["PWD"]}/cogs') if file.endswith('py')]
+cogs = [file.split('.')[0] for file in os.listdir('cogs') if file.endswith('py')]
 for cog in cogs:
     bot.load_extension(f'cogs.{cog}')
 
