@@ -8,7 +8,7 @@ class Meta:
 
     def __init__(self, bot):
         self.bot = bot
-        self.version = '0.2.1'
+        self.version = '0.2.2'
         self.counter = Counter()
 
     async def on_command_completion(self, command, ctx):
@@ -27,7 +27,7 @@ class Meta:
         mem_usage = self.bot.process.memory_full_info().uss / 1024**2
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
         commands_used = sum(self.counter.values())
-        commands_common = '\n'.join([f'**{name.capitalize()}: **{count}' for name, count in self.counter.items()])
+        commands_common = '\n'.join([f'**{name.capitalize()}: **{count}' for name, count in self.counter.most_common(3)])
 
         if days:
             time = f'{days}d {hours}h {minutes}m {seconds}s'
