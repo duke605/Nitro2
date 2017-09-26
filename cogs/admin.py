@@ -2,6 +2,8 @@ from discord.ext import commands
 from hashlib import sha256
 from subprocess import call
 from io import StringIO
+from racer import Racer
+from util import choices, Arguments, nt_name_for_discord_id
 import discord, asyncio, functools, sys
 
 
@@ -9,6 +11,7 @@ class Admin:
 
     def __init__(self, bot):
         self.bot = bot
+        self.con = bot.db_connection
 
     @commands.command(hidden=True, pass_context=True)
     @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
@@ -21,6 +24,61 @@ class Admin:
     async def reboot(self):
         await self.bot.say('Goodbye')
         await self.bot.logout()
+
+    @commands.group(hidden=True)
+    @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
+    async def sudo(self):
+        pass
+
+    @sudo.command(pass_context=True)
+    async def register(self, ctx, *, msg)
+        parser = Arguments(allow_abbrev=True, prog='sudo register')
+        parser.add_field('user', type=choices.user(ctx.message.server), description='The Discord user you wish to associate a Nitro Type account to.')
+        parser.add_field('username', description='The Nitro Type account you with to associate the Discord account with.')
+
+        await self.bot.send_typing(ctx.message.channel)
+        args = await parser.do_parse(self.bot, msg)
+
+        if not args:
+            return
+
+        c = self.con.cursor()
+        c.execute('SELECT * FROM users WHERE id = ? OR nitro_name LIKE ? LIMIT 1', (args.user.id, args.username))
+        u = c.fetchone()
+
+        if u:
+            if u['id'] == args.user.id:
+                await self.bot.say('That user already has a Nitro Type account associated with their Discord account.')
+            elif u['nitro_name'].lower() == args.user.lower():
+                await self.bot.say('That Nitro Type account is already associated to another\'s Discord account.')
+            return
+
+        racer = await Racer.get(args.username)
+        if not racer:
+            await self.bot.say(f'A Nitro Type account with the user name **{args.username}** does not exist.')
+            return
+
+        self.con.execute('INSERT INTO users VALUES (?, ?)', (args.user.id, racer.username))
+        await self.bot.add_reaction(ctx.message, '\U00002705')
+
+    @sudo.command(pass_context=True)
+    async def unregister(self, ctx, *, msg):
+        parser = Arguments(allow_abbrev=True, prog='sudo register')
+        parser.add_field('user', type=choices.user(ctx.message.server), description='The Discord user you wish to unlink a Nitro Type account from.')
+
+        await self.bot.send_typing(ctx.message.channel)
+        args = await parser.do_parse(self.bot, msg)
+
+        if not args:
+            return
+
+        nitro_name = nt_name_for_discord_id(args.user.id)
+        if not nitro_name:
+            await self.bot.say('That user does not have a Nitro Type account associated with their Discord account.')
+            return
+
+        self.con.execute('DELETE FROM users WHERE id = ?', (args.user.id,))
+        await self.bot.add_reaction(ctx.message, '\U00002705')
 
     @commands.group(hidden=True, aliases=['ext', 'cog'])
     @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
