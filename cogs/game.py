@@ -253,10 +253,10 @@ class Game:
         e.set_author(name=t.display_name, url=t.url, icon_url='')
         e.add_field(name='Enrollment', value=f'{t.enrollment.capitalize()}\n**Speed: **{t.min_speed}\n**Level: **{t.min_level}')
         e.add_field(name='Founded On', value=t.created_at.strftime('%b %d, %Y at %I:%M %p').replace(' 0', ' '))
+        t.board_season.add_field(e)
         t.board_daily.add_field(e)
         t.board_weekly.add_field(e)
         t.board_monthly.add_field(e)
-        t.board_season.add_field(e)
         await self.bot.say(None, embed=e)
 
 
