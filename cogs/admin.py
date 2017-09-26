@@ -34,8 +34,8 @@ class Admin:
     @sudo.command(pass_context=True)
     async def register(self, ctx, *, msg):
         parser = Arguments(allow_abbrev=True, prog='sudo register')
-        parser.add_field('user', type=choices.user(ctx.message.server), description='The Discord user you wish to associate a Nitro Type account to.')
-        parser.add_field('username', description='The Nitro Type account you with to associate the Discord account with.')
+        parser.add_argument('user', type=choices.user(ctx.message.server), help='The Discord user you wish to associate a Nitro Type account to.')
+        parser.add_argument('username', help='The Nitro Type account you with to associate the Discord account with.')
 
         await self.bot.send_typing(ctx.message.channel)
         args = await parser.do_parse(self.bot, msg)
@@ -50,7 +50,7 @@ class Admin:
         if u:
             if u['id'] == args.user.id:
                 await self.bot.say('That user already has a Nitro Type account associated with their Discord account.')
-            elif u['nitro_name'].lower() == args.user.lower():
+            elif u['nitro_name'].lower() == args.username.lower():
                 await self.bot.say('That Nitro Type account is already associated to another\'s Discord account.')
             return
 
@@ -65,7 +65,7 @@ class Admin:
     @sudo.command(pass_context=True)
     async def unregister(self, ctx, *, msg):
         parser = Arguments(allow_abbrev=True, prog='sudo register')
-        parser.add_field('user', type=choices.user(ctx.message.server), description='The Discord user you wish to unlink a Nitro Type account from.')
+        parser.add_argument('user', type=choices.user(ctx.message.server), help='The Discord user you wish to unlink a Nitro Type account from.')
 
         await self.bot.send_typing(ctx.message.channel)
         args = await parser.do_parse(self.bot, msg)
@@ -73,7 +73,7 @@ class Admin:
         if not args:
             return
 
-        nitro_name = nt_name_for_discord_id(args.user.id)
+        nitro_name = nt_name_for_discord_id(args.user.id, self.con)
         if not nitro_name:
             await self.bot.say('That user does not have a Nitro Type account associated with their Discord account.')
             return
