@@ -3,6 +3,7 @@ from datetime import datetime
 from discord.ext import commands
 from env import env
 
+
 bot = commands.Bot(command_prefix=env['COMMAND_PREFIX'])
 
 bot.db_connection = sqlite3.connect('nitro.db')
