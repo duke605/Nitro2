@@ -1,6 +1,6 @@
 from discord.ext import commands
 from hashlib import sha256
-from subprocess import Popen, PIPE
+from subprocess import call
 from io import StringIO
 import discord, asyncio, functools, sys
 
@@ -14,14 +14,7 @@ class Admin:
     @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
     async def update(self, ctx):
         await self.bot.send_typing(ctx.message.channel)
-
-        def t():
-            with Popen('git pull origin master', shell=True, stdout=PIPE, stderr=PIPE) as proc:
-                proc.stdout.seek(0)
-                return proc.stderr.read()
-
-        output = await self.bot.loop.run_in_executor(None, t)
-        await self.bot.say(output.decode('UTF-8'))
+        await self.bot.loop.run_in_executor(None, functools.partial(call, 'git pull origin master', shell=True))
 
     @commands.command(hidden=True)
     @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
