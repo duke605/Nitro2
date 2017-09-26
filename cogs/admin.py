@@ -32,7 +32,7 @@ class Admin:
         pass
 
     @sudo.command(pass_context=True)
-    async def register(self, ctx, *, msg)
+    async def register(self, ctx, *, msg):
         parser = Arguments(allow_abbrev=True, prog='sudo register')
         parser.add_field('user', type=choices.user(ctx.message.server), description='The Discord user you wish to associate a Nitro Type account to.')
         parser.add_field('username', description='The Nitro Type account you with to associate the Discord account with.')
