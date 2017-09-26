@@ -1,21 +1,54 @@
 from datetime import datetime
 from board import Board
+from racer import Racer
 import aiohttp
+
+class TeamMember:
+
+    def __init__(self, tag, json):
+        self.id = json['userID']
+        self.tag = tag
+        self.username = json['username']
+        self.membership = json['membership']
+        self.level = json['level']
+        self.avg_speed = json['avgSpeed']
+        self.title = json['title']
+        self.country = json['country']
+        self.gender = json['gender']
+        self.car_id = json['carID']
+        self.car_hue_angle = json['carHueAngle']
+        self.last_login = json['lastLogin']
+        self.status = json['status']
+        self.join_stamp = datetime.fromtimestamp(json['joinStamp'])
+        self.role = json['role']
+
+        self._display_name = json['displayName']
+
+    @property
+    def display_name(self):
+        return self._display_name or self.username
+
+    @property
+    def display_name_wtag(self):
+        return (f'[{self.tag}] ' if self.tag else '') + (self._display_name or self.username)
 
 class Team:
 
     def __init__(self, json):
         self.id = json['info']['teamID']
+        self.captain_id = json['info']['userID']
         self.tag = json['info']['tag']
         self.tag_colour = int(f"0x{json['info']['tagColor']}", 16)
         self.name = json['info']['name']
         self.other_requirements = json['info']['otherRequirements']
-        self.members = json['info']['members']
+        self.member_count = json['info']['members']
         self.enrollment = json['info']['enrollment']
         self.profile_views = json['info']['profileViews']
         self.last_activity = datetime.fromtimestamp(json['info']['lastActivity'])
         self.last_modified = datetime.fromtimestamp(json['info']['lastModified'])
         self.created_at = datetime.fromtimestamp(json['info']['createdStamp'])
+
+        self.members = [TeamMember(self.tag, m) for m in json['members']]
 
         self._min_level = json['info']['minLevel']
         self._min_speed = json['info']['minSpeed']
