@@ -18,6 +18,7 @@ class Admin:
     async def update(self, ctx):
         await self.bot.send_typing(ctx.message.channel)
         await self.bot.loop.run_in_executor(None, functools.partial(call, 'git pull origin master', shell=True))
+        await self.bot.add_reaction(ctx.message, '\U00002705')
 
     @commands.command(hidden=True)
     @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
