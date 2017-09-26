@@ -8,13 +8,14 @@ class Meta:
 
     def __init__(self, bot):
         self.bot = bot
-        self.version = '0.2.3'
+        self.version = '0.2.4'
         self.counter = Counter()
 
     async def on_command_completion(self, command, ctx):
         self.counter[command.name] += 1
 
     @commands.command(pass_context=True, aliases=['info'], description='Shows information about the bot.')
+    @commands.cooldown(1, 10, commands.cooldowns.BucketType.user)
     async def about(self, ctx):
         e = discord.Embed(title='Official Development Server Invite', url='https://discord.gg/q3UNHq8', description='https://github.com/duke605/Nitro2')
         owner = await self.bot.get_user_info('136856172203474944')
