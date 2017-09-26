@@ -86,7 +86,7 @@ class Game:
             return
 
         # Checking if player has enough cars to be verified
-        if len([c for c in racer.cars if c.owned]) < 2:
+        if len([c for c in racer.cars if c.owned]) <= 2:
             await self.bot.say('You must have more than 2 cars to be able to register.')
             return
 
