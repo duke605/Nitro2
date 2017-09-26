@@ -65,7 +65,7 @@ class Game:
         c = self.con.cursor()
 
         await self.bot.send_typing(ctx.message.channel)
-        c.execute('SELECT * FROM users WHERE id = ? OR nitro_name = ? LIMIT 1', (author.id, msg))
+        c.execute('SELECT * FROM users WHERE id = ? OR nitro_name LIKE ? LIMIT 1', (author.id, msg))
         u = c.fetchone()
 
         # Checking if the discord account is already registered
@@ -98,7 +98,7 @@ class Game:
             return
 
         # Checking if there is an open registration on that user already
-        if [1 for ver in self.pending_registrations.values() if ver.racer.username == msg and ver.expiry >= datetime.utcnow()]:
+        if [1 for ver in self.pending_registrations.values() if ver.racer.username.lower() == msg.lower() and ver.expiry >= datetime.utcnow()]:
             await self.bot.say('There is already a pending registration for that NitroType account.')
             return
 
