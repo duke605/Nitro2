@@ -104,7 +104,7 @@ class Racer:
 
         if thumbnail:
             e.set_thumbnail(url=self.car.thumbnail)
-            
+
         return e
 
     async def update(self):
@@ -120,7 +120,7 @@ class Racer:
                 json = user
                 break
 
-        if not json.get('country'):
+        if not json.get('userID'):
             await Racer.get(self.username, racer=self)
             return
 
