@@ -10,7 +10,7 @@ class Meta:
 
     def __init__(self, bot):
         self.bot = bot
-        self.version = '0.3.3'
+        self.version = '0.3.5'
         self.counter = Counter()
 
     async def on_command_completion(self, command, ctx):
@@ -65,7 +65,7 @@ class Meta:
                 {
                     "name": "command",
                     "type": "string",
-                    "value": "The command you need help with. Leave this would if you want to see a list of commands."
+                    "value": "The command you need help with. Leave blank this would if you want to see a list of commands."
                 }
             ],
             "options": [
@@ -120,7 +120,6 @@ class Meta:
         e.clear_fields()
 
         SHOWN = 5
-        print(page)
         page = max(1, page) - 1
         count = sum([1 for k in bot.commands if not bot.commands[k].hidden and k not in bot.commands[k].aliases])
         commands = [k for k in bot.commands if not bot.commands[k].hidden and k not in bot.commands[k].aliases]
