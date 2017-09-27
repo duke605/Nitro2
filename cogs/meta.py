@@ -87,10 +87,9 @@ class Meta:
         if not args:
             return
 
-        page = max(1, args.page) - 1
         e = discord.Embed()
         if not args.command:
-            if await Meta.write_help_to_embed(self.bot, page, e):
+            if await Meta.write_help_to_embed(self.bot, args.page, e):
                 await self.bot.say(None, embed=e)
             return
 
@@ -121,6 +120,7 @@ class Meta:
         e.clear_fields()
 
         SHOWN = 5
+        print(page)
         page = max(1, page) - 1
         count = sum([1 for k in bot.commands if not bot.commands[k].hidden and k not in bot.commands[k].aliases])
         commands = [k for k in bot.commands if not bot.commands[k].hidden and k not in bot.commands[k].aliases]
