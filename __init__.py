@@ -5,6 +5,7 @@ from hashlib import sha256
 from env import env
 
 bot = commands.Bot(command_prefix=env['COMMAND_PREFIX'])
+bot.remove_command('help')
 
 bot.db_connection = sqlite3.connect('nitro.db')
 bot.db_connection.row_factory = sqlite3.Row

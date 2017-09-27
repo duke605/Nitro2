@@ -50,6 +50,12 @@ class Game:
 
     @commands.command(pass_context=True, description='Unassociates your Discord account with a NitroType account.')
     async def unregister(self, ctx):
+        """
+        {
+            "usage": "unregister"
+        }
+        """
+
         nt_name = nt_name_for_discord_id(ctx.message.author.id, self.con)
         if not nt_name:
             await self.bot.say('You do not have a NitroType account associated with your Discord account.')
@@ -61,6 +67,19 @@ class Game:
 
     @commands.command(pass_context=True, aliases=['reg'], description='Associates your Discord account with a NitroType account.')
     async def register(self, ctx, *, msg):
+        """
+        {
+            "usage": "register username",
+            "arguments": [
+                {
+                    "name": "username",
+                    "type": "string",
+                    "value": "The username (not display name) of the Nitro Type account you wish to associate with your Discord account."
+                }
+            ]
+        }
+        """
+
         author = ctx.message.author
         c = self.con.cursor()
 
@@ -115,8 +134,14 @@ class Game:
         e.set_thumbnail(url=v_car.thumbnail)
         await self.bot.say(None, embed=e)
 
-    @commands.command(pass_context=True, description='#TODO')
+    @commands.command(pass_context=True, description='Verifies your account. This command is to be used AFTER the register command.')
     async def verify(self, ctx):
+        """
+        {
+            "usage": "verify"
+        }
+        """
+
         author = ctx.message.author
         v = self.pending_registrations.get(author.id)
 
@@ -141,8 +166,22 @@ class Game:
     @commands.command(pass_context=True, aliases=['profile'], description="Shows a information about a racer's racer card.")
     @commands.cooldown(1, 30, commands.cooldowns.BucketType.user)
     async def racer(self, ctx, *, msg=''):
+        """
+        {
+            "usage": "racer [user]",
+            "cooldown": 30,
+            "arguments": [
+                {
+                    "name": "user",
+                    "type": "mention | int",
+                    "value": "The user you wish to get a racer card for. If omitted racer information with be retrieved for command user."
+                }
+            ]
+        }
+        """
+
         parser = Arguments(allow_abbrev=True, prog='racer')
-        parser.add_argument('user', type=choices.user(ctx.message.server), default=ctx.message.author, nargs='?', help='Does stuff')
+        parser.add_argument('user', type=choices.user(ctx.message.server), default=ctx.message.author, nargs='?')
 
         await self.bot.send_typing(ctx.message.channel)
         args = await parser.do_parse(self.bot, msg)
@@ -173,8 +212,22 @@ class Game:
     @commands.command(pass_context=True, description='Shows statistical information about a racer')
     @commands.cooldown(1, 30, commands.cooldowns.BucketType.user)
     async def stats(self, ctx, *, msg=''):
+        """
+        {
+            "usage": "stats [user]",
+            "cooldown": 30,
+            "arguments": [
+                {
+                    "name": "user",
+                    "type": "mention | int",
+                    "value": "The user you wish to get stats for. If omitted stats information with be retrieved for command user."
+                }
+            ]
+        }
+        """
+
         parser = Arguments(allow_abbrev=True, prog='stats')
-        parser.add_argument('user', type=choices.user(ctx.message.server), default=ctx.message.author, nargs='?', help='Does stuff')
+        parser.add_argument('user', type=choices.user(ctx.message.server), default=ctx.message.author, nargs='?')
 
         await self.bot.send_typing(ctx.message.channel)
         args = await parser.do_parse(self.bot, msg)
@@ -233,6 +286,19 @@ class Game:
     @commands.command(pass_context=True, description='Shows information about a NitroType team.')
     @commands.cooldown(1, 30, commands.cooldowns.BucketType.user)
     async def team(self, ctx, *, msg):
+        """
+        {
+            "usage": "team tag",
+            "cooldown": 30,
+            "arguments": [
+                {
+                    "name": "tag",
+                    "type": "string",
+                    "value": "The tag of the team you wish to retrieve information for."
+                }
+            ]
+        }
+        """
         parser = Arguments(allow_abbrev=True, prog='stats')
         parser.add_argument('tag', help='Does stuff')
 
