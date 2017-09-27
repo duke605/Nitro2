@@ -3,7 +3,7 @@ from collections import Counter
 from datetime import datetime
 from math import ceil
 from util import Arguments
-import os, discord, psutil, json
+import os, discord, psutil, json, re
 
 
 class Meta:
@@ -89,8 +89,10 @@ class Meta:
 
         e = discord.Embed()
         if not args.command:
-            if await Meta.write_help_to_embed(self.bot, args.page, e):
-                await self.bot.say(None, embed=e)
+            if Meta.write_help_to_embed(self.bot, args.page, e):
+                m = await self.bot.say(None, embed=e)
+                await self.bot.add_reaction(m, '\U000025c0')
+                await self.bot.add_reaction(m, '\U000025b6')
             return
 
         cmd = self.bot.commands.get(args.command)
@@ -115,10 +117,30 @@ class Meta:
 
         await self.bot.say(None, embed=e)
 
-    @staticmethod
-    async def write_help_to_embed(bot, page, e):
-        e.clear_fields()
+    async def on_reaction_add(self, reaction, user):
+        # Checking if the message is a help message
+        if not reaction.message.embeds or user.bot:
+            return
 
+        e = discord.Embed(**reaction.message.embeds[0])
+        if not re.search(r'Help \(Page (\d)/\d\)', e.title):
+            return
+
+        m = re.search(r'Help \(Page (\d)/\d\)', e.title)
+        page = int(m.group(1))
+
+        if reaction.emoji == '\U000025b6':
+            page += 1
+        elif reaction.emoji == '\U000025c0':
+            page -= 1
+        else:
+            return
+
+        if Meta.write_help_to_embed(self.bot, page, e):
+            await self.bot.edit_message(reaction.message, None, embed=e)
+
+    @staticmethod
+    def write_help_to_embed(bot, page, e):
         SHOWN = 5
         page = max(1, page) - 1
         count = sum([1 for k in bot.commands if not bot.commands[k].hidden and k not in bot.commands[k].aliases])
@@ -128,6 +150,7 @@ class Meta:
         if not commands:
             return False
 
+        e.clear_fields()
         e.title = f'Help (Page {page + 1}/{int(ceil(count/SHOWN))})'
         e.description = u'Type `!help [command]` for more information about a specific command.\n\u200B'
 
