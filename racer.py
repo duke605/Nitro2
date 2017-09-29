@@ -110,7 +110,7 @@ class Racer:
         return e
 
     async def apply_roles(self, bot, user):
-        racer_roles = []
+        racer_roles = ['Registered']
 
         if self.tag:
             team = await Team.get(self.tag)
