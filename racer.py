@@ -3,6 +3,8 @@ from race import Race
 from car import Car
 from collections import namedtuple
 from board import Board
+from team import Team
+from env import env
 import aiohttp, re, json, discord
 
 class Racer:
@@ -106,6 +108,40 @@ class Racer:
             e.set_thumbnail(url=self.car.thumbnail)
 
         return e
+
+    async def apply_roles(self, bot, user):
+        racer_roles = []
+
+        if self.tag:
+            team = await Team.get(self.tag)
+
+            if self.id == team.captain_id:
+                racer_roles.append('Captain')
+            elif [1 for m in team.members if m.id == user.id and m.role == 'officer']:
+                racer_roles.append('Officer')
+
+        if self.board_weekly.games_played >= 500:
+            racer_roles.append('Active')
+
+        if self.board_weekly.accuracy >= 97:
+            racer_roles.append('Accurate')
+
+        if self.board_weekly.avg_speed >= 100:
+            racer_roles.append('Fast')
+
+        if self.created_at.year <= 2014:
+            racer_roles.append('Veteran')
+
+        if self.longest_session >= 800:
+            racer_roles.append('Sessionist')
+
+        if self.money >= 10_000_000:
+            racer_roles.append('Wealthy')
+
+        user_roles = [r.name for r in user.roles]
+        roles = list(filter(lambda r: (r.name not in env['ROLE_NAMES'] and r.name in user_roles) or r.name in racer_roles, user.server.roles))
+        await bot.replace_roles(user, *roles)
+        await bot.change_nickname(user, self.display_name_wtag)
 
     async def update(self):
         async with aiohttp.client.post(f'https://www.nitrotype.com/api/players-search', data={'term': self.username}) as r:

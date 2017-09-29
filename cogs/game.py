@@ -6,10 +6,11 @@ from racer import Racer
 from team import Team
 from car import Car
 from collections import namedtuple
+from env import env
 import matplotlib
 
 matplotlib.use('Agg')
-import env, functools, discord, asyncio, traceback, sys, matplotlib.pyplot as plt, random
+import functools, discord, asyncio, traceback, sys, matplotlib.pyplot as plt, random
 
 class Game:
 
@@ -56,14 +57,17 @@ class Game:
         }
         """
 
-        nt_name = nt_name_for_discord_id(ctx.message.author.id, self.con)
+        author = ctx.message.author
+        nt_name = nt_name_for_discord_id(author.id, self.con)
         if not nt_name:
             await self.bot.say('You do not have a NitroType account associated with your Discord account.')
             return
 
-        with self.con:
-            self.con.execute('DELETE FROM users WHERE id = ?', (ctx.message.author.id,))
-            await self.bot.add_reaction(ctx.message, '\U00002705')
+        self.con.execute('DELETE FROM users WHERE id = ?', (ctx.message.author.id,))
+        await self.bot.add_reaction(ctx.message, '\U00002705')
+
+
+        await self.bot.replace_roles(author, *list(filter(lambda r: r.name not in env['ROLE_NAMES'], author.roles)))
 
     @commands.command(pass_context=True, aliases=['reg'], description='Associates your Discord account with a NitroType account.')
     async def register(self, ctx, *, msg):
@@ -155,6 +159,7 @@ class Game:
             self.con.execute('INSERT INTO users VALUES (?, ?)', (author.id, racer.username))
             del self.pending_registrations[ctx.message.author.id]
             await self.bot.add_reaction(ctx.message, '\U00002705')
+            await racer.apply_roles(self.bot, author)
             return
 
         e = discord.Embed()

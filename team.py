@@ -1,6 +1,5 @@
 from datetime import datetime
 from board import Board
-from racer import Racer
 import aiohttp
 
 class TeamMember:

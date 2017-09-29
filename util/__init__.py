@@ -1,4 +1,5 @@
 from .arguments import Arguments
+from .decorators import *
 from env import env
 import aiohttp, re, json, traceback, sys
 

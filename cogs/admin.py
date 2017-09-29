@@ -4,6 +4,7 @@ from subprocess import call
 from io import StringIO
 from racer import Racer
 from util import choices, Arguments, nt_name_for_discord_id
+from env import env
 import discord, asyncio, functools, sys
 
 
@@ -61,6 +62,7 @@ class Admin:
 
         self.con.execute('INSERT INTO users VALUES (?, ?)', (args.user.id, racer.username))
         await self.bot.add_reaction(ctx.message, '\U00002705')
+        await racer.apply_roles(self.bot, args.user)
 
     @sudo.command(pass_context=True, aliases=['unreg'])
     async def unregister(self, ctx, *, msg):
@@ -80,6 +82,7 @@ class Admin:
 
         self.con.execute('DELETE FROM users WHERE id = ?', (args.user.id,))
         await self.bot.add_reaction(ctx.message, '\U00002705')
+        await self.bot.replace_roles(args.user, *list(filter(lambda r: r.name not in env['ROLE_NAMES'], args.user.roles)))
 
     @commands.group(hidden=True, aliases=['ext', 'cog'])
     @commands.check(lambda ctx: ctx.message.author.id == '136856172203474944')
