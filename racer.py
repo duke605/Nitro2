@@ -117,7 +117,7 @@ class Racer:
 
             if self.id == team.captain_id:
                 racer_roles.append('Captain')
-            elif [1 for m in team.members if m.id == user.id and m.role == 'officer']:
+            elif discord.utils.get(team.members, id=self.id).role == 'officer':
                 racer_roles.append('Officer')
 
         if self.board_weekly.games_played >= 500:
