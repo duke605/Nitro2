@@ -10,7 +10,7 @@ class Meta:
 
     def __init__(self, bot):
         self.bot = bot
-        self.version = '0.4.1'
+        self.version = '0.4.2'
         self.counter = Counter()
 
     async def on_command_completion(self, command, ctx):

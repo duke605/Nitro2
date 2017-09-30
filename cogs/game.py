@@ -95,7 +95,7 @@ class Game:
         if u:
             if u['id'] == ctx.message.author.id:
                 await self.bot.say('A NitroType account is already associated with your Discord account.')
-            elif u['nt_name'] == msg:
+            elif u['nitro_name'] == msg:
                 await self.bot.say('That NitroType account is already associated with someone else\'s Discord account.')
             else:
                 await self.bot.say('A NitroType account is already associated with your Discord account.')
