@@ -57,7 +57,7 @@ class Admin:
         await self.bot.send_typing(ctx.message.channel)
 
         try:
-            result = eval(code, env)
+            result = eval(code, _env)
             if inspect.isawaitable(result):
                 result = await result
         except Exception as e:
