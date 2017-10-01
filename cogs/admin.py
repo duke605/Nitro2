@@ -35,36 +35,36 @@ class Admin:
     @sudo.command(pass_context=True, name='eval')
     async def _eval(self, ctx, *, code):
 
-    """Evaluates code."""
-    python = '```py\n' \
-             '# Input\n' \
-             '{}\n\n' \
-             '# Output\n' \
-             '{}' \
-             '```'
+        """Evaluates code."""
+        python = '```py\n' \
+                 '# Input\n' \
+                 '{}\n\n' \
+                 '# Output\n' \
+                 '{}' \
+                 '```'
 
-    _env = {
-        'bot': self.bot,
-        'ctx': ctx,
-        'message': ctx.message,
-        'server': ctx.message.server,
-        'channel': ctx.message.channel,
-        'author': ctx.message.author
-    }
+        _env = {
+            'bot': self.bot,
+            'ctx': ctx,
+            'message': ctx.message,
+            'server': ctx.message.server,
+            'channel': ctx.message.channel,
+            'author': ctx.message.author
+        }
 
-    _env.update(globals())
+        _env.update(globals())
 
-    await self.bot.send_typing(ctx.message.channel)
+        await self.bot.send_typing(ctx.message.channel)
 
-    try:
-        result = eval(code, env)
-        if inspect.isawaitable(result):
-            result = await result
-    except Exception as e:
-        await self.bot.say(python.format(code, type(e).__name__ + ': ' + str(e)))
-        return
+        try:
+            result = eval(code, env)
+            if inspect.isawaitable(result):
+                result = await result
+        except Exception as e:
+            await self.bot.say(python.format(code, type(e).__name__ + ': ' + str(e)))
+            return
 
-    await self.bot.say(python.format(code, result or 'N/A'))
+        await self.bot.say(python.format(code, result or 'N/A'))
 
     @sudo.command(pass_context=True, aliases=['reg'])
     async def register(self, ctx, *, msg):
