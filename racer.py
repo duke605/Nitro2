@@ -126,7 +126,7 @@ class Racer:
         if self.board_weekly.accuracy >= 97:
             racer_roles.append('Accurate')
 
-        if self.board_weekly.avg_speed >= 100:
+        if self.avg_speed >= 100:
             racer_roles.append('Fast')
 
         if self.created_at.year <= 2014:
