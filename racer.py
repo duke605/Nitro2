@@ -63,11 +63,11 @@ class Racer:
             else:
                 continue
 
-            board.typed = b['typed']
-            board.secs = b['secs']
-            board.games_played = b['played']
-            board.errors = b['errs']
-            board.rank = b['rank']
+            board.typed = b.get('typed', 0)
+            board.secs = b.get('secs', 0)
+            board.games_played = b.get('played', 0)
+            board.errors = b.get('errs', 0)
+            board.rank = b.get('rank', 0)
 
     @property
     def money_earned(self):

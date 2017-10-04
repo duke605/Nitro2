@@ -10,7 +10,7 @@ class Meta:
 
     def __init__(self, bot):
         self.bot = bot
-        self.version = '0.4.4'
+        self.version = '0.4.5'
         self.counter = Counter()
 
     async def on_command_completion(self, command, ctx):
@@ -29,7 +29,7 @@ class Meta:
         owner = await self.bot.get_user_info('136856172203474944')
 
         # Preparing field data
-        uptime = datetime.utcnow() -self.bot.uptime
+        uptime = datetime.utcnow() - self.bot.uptime
         hours, rem = divmod(int(uptime.total_seconds()), 3600)
         minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)

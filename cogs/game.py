@@ -324,7 +324,7 @@ class Game:
     async def _get_racer(self, o):
         nt_name = o
 
-        if type(o) is discord.User:
+        if isinstance(o, discord.User):
             nt_name = nt_name_for_discord_id(o.id, self.con)
 
             if not nt_name:
