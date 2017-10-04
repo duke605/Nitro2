@@ -186,7 +186,7 @@ class Game:
         """
 
         parser = Arguments(allow_abbrev=True, prog='racer')
-        parser.add_argument('user', type=choices.user(ctx.message.server), default=ctx.message.author, nargs='?')
+        parser.add_argument('user', type=choices.nt_user(ctx.message.server), default=ctx.message.author, nargs='?')
 
         await self.bot.send_typing(ctx.message.channel)
         args = await parser.do_parse(self.bot, msg)
@@ -194,17 +194,11 @@ class Game:
         if not args:
             return
 
-        # Checking if the user is registered
-        u = nt_name_for_discord_id(args.user.id, self.con)
-        if not u:
-            if args.user.id == ctx.message.author.id:
-                await self.bot.say('You do not have a NitroType account associated with your Discord account.')
-            else:
-                await self.bot.say('That user does not have a NitroType account associated with their Discord account.')
+        try:
+            racer = await self._get_racer(args.user)
+        except Exception as e:
+            await self.bot.say(str(e))
             return
-
-        # Creating the embed
-        racer = await Racer.get(u)
 
         e = racer.setup_embed()
         e.add_field(name='Current Car', value=f"{racer.car.name}", inline=False)
@@ -232,7 +226,7 @@ class Game:
         """
 
         parser = Arguments(allow_abbrev=True, prog='stats')
-        parser.add_argument('user', type=choices.user(ctx.message.server), default=ctx.message.author, nargs='?')
+        parser.add_argument('user', type=choices.nt_user(ctx.message.server), default=ctx.message.author, nargs='?')
 
         await self.bot.send_typing(ctx.message.channel)
         args = await parser.do_parse(self.bot, msg)
@@ -240,17 +234,11 @@ class Game:
         if not args:
             return
 
-        # Checking if the user is registered
-        u = nt_name_for_discord_id(args.user.id, self.con)
-        if not u:
-            if args.user.id == ctx.message.author.id:
-                await self.bot.say('You do not have a NitroType account associated with your Discord account.')
-            else:
-                await self.bot.say('That user does not have a NitroType account associated with their Discord account.')
+        try:
+            racer = await self._get_racer(args.user)
+        except Exception as e:
+            await self.bot.say(str(e))
             return
-
-        # Creating the embed
-        racer = await Racer.get(u)
 
         e = racer.setup_embed()
         e.add_field(name='Member Since', value=racer.created_at.strftime('%b %d, %Y at %I:%M %p').replace(' 0', ' '))
@@ -332,6 +320,26 @@ class Game:
         t.board_weekly.add_field(e)
         t.board_monthly.add_field(e)
         await self.bot.say(None, embed=e)
+
+    async def _get_racer(self, o):
+        nt_name = o
+
+        if type(o) is discord.User:
+            nt_name = nt_name_for_discord_id(o.id, self.con)
+
+            if not nt_name:
+                raise Exception('User does not have a NitroType account associated with their Discord account.')
+
+        racer = await Racer.get(nt_name)
+
+        if not racer:
+            if type(o) is discord.User:
+                self.con.execute('DELETE FROM users WHERE id = ?', (o.id,))
+                raise Exception('User does not have a NitroType account associated with their Discord account.')
+
+            raise Exception(f'Nitro Type user **{nt_name}** does not exist.')
+
+        return racer
 
 
 def setup(bot):
