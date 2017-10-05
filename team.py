@@ -36,6 +36,8 @@ class Team:
     def __init__(self, json):
         self.id = json['info']['teamID']
         self.captain_id = json['info']['userID']
+        self.captain_username = json['info']['username']
+        self.captain_display_name = json['info']['displayName']
         self.tag = json['info']['tag']
         self.tag_colour = int(f"0x{json['info']['tagColor']}", 16)
         self.name = json['info']['name']

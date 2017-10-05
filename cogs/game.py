@@ -307,14 +307,13 @@ class Game:
             await self.bot.say('A Nitro Type team with that tag does not exist.')
             return
 
-        captain = discord.utils.get(t.members, id=t.captain_id)
         founded_on = t.created_at.strftime('%b %d, %Y').replace(' 0', ' ')
 
         e = discord.Embed(colour=t.tag_colour)
         e.description = u'\u200B' if not t.other_requirements else t.other_requirements
         e.set_author(name=t.display_name, url=t.url, icon_url='')
         e.add_field(name='Enrollment', value=f'{t.enrollment.capitalize()}\n**Speed: **{t.min_speed}\n**Level: **{t.min_level}')
-        e.add_field(name='About', value=f'**Founded On: **{founded_on}\n**Captain: **{captain.display_name}\n**Member Count: **{t.member_count}')
+        e.add_field(name='About', value=f'**Founded On: **{founded_on}\n**Captain: **{t.captain_display_name or t.captain_username}\n**Member Count: **{t.member_count}')
         t.board_season.add_field(e)
         t.board_daily.add_field(e)
         t.board_weekly.add_field(e)
