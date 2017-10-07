@@ -25,7 +25,7 @@ def nt_user(server):
     def test(s):
         match = re.search('^<@!?(\d+?)>$', s) or re.search('^(\d+)$', s)
 
-        if not match:
+        if not match or len(match.group(1)) < 18:
             return s
 
         u = server.get_member(match.group(1))
