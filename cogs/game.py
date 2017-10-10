@@ -21,6 +21,9 @@ class Game:
         self.con = bot.db_connection
         self.pending_registrations = {}
 
+    async def on_member_remove(self, m):
+        self.con.execute('DELETE FROM users WHERE id = ?', (m.id,))
+
     async def on_command_error(self, ex, ctx):
         if type(ex) is commands.errors.CommandNotFound:
             return
@@ -65,8 +68,6 @@ class Game:
 
         self.con.execute('DELETE FROM users WHERE id = ?', (ctx.message.author.id,))
         await self.bot.add_reaction(ctx.message, '\U00002705')
-
-
         await self.bot.replace_roles(author, *list(filter(lambda r: r.name not in env['ROLE_NAMES'], author.roles)))
 
     @commands.command(pass_context=True, aliases=['reg'], description='Associates your Discord account with a NitroType account.')

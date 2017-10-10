@@ -141,6 +141,9 @@ class Racer:
         if self.is_gold:
             racer_roles.append('Gold')
 
+        if self.board_monthly.games_played > 3_000:
+            racer_roles.append('Elite')
+
         user_roles = [r.name for r in user.roles]
         roles = list(filter(lambda r: (r.name not in env['ROLE_NAMES'] and r.name in user_roles) or r.name in racer_roles, user.server.roles))
         await bot.replace_roles(user, *roles)
