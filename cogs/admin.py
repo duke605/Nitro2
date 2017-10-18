@@ -34,7 +34,7 @@ class Admin:
 
     @sudo.command()
     async def kick(self, *, msg):
-        parser = Arguments(allow_abbrev=True, prog='sudo kickr')
+        parser = Arguments(allow_abbrev=True, prog='sudo kick')
         parser.add_argument('user', type=choices.user(ctx.message.server))
 
         await self.bot.send_typing(ctx.message.channel)
@@ -44,7 +44,22 @@ class Admin:
             return
 
         self.con.execute('DELETE FROM users WHERE id = ?', (args.user.id,))
-        self.bot.kick(args.user)
+        await self.bot.kick(args.user)
+        await self.bot.add_reaction(ctx.message, '\U00002705')
+
+    @sudo.command()
+    async def ban(self, *, msg):
+        parser = Arguments(allow_abbrev=True, prog='sudo ban')
+        parser.add_argument('user', type=choices.user(ctx.message.server))
+
+        await self.bot.send_typing(ctx.message.channel)
+        args = await parser.do_parse(self.bot, msg)
+
+        if not args:
+            return
+
+        self.con.execute('DELETE FROM users WHERE id = ?', (args.user.id,))
+        await self.bot.kick(args.user)
         await self.bot.add_reaction(ctx.message, '\U00002705')
 
     @sudo.command(pass_context=True, name='eval')
