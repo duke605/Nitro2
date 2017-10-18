@@ -47,8 +47,8 @@ class Admin:
         await self.bot.kick(args.user)
         await self.bot.add_reaction(ctx.message, '\U00002705')
 
-    @sudo.command()
-    async def ban(self, *, msg):
+    @sudo.command(pass_context=True)
+    async def ban(self, ctx, *, msg):
         parser = Arguments(allow_abbrev=True, prog='sudo ban')
         parser.add_argument('user', type=choices.user(ctx.message.server))
 
@@ -59,7 +59,7 @@ class Admin:
             return
 
         self.con.execute('DELETE FROM users WHERE id = ?', (args.user.id,))
-        await self.bot.kick(args.user)
+        await self.bot.ban(ctx.message.server.get_member(args.user.id), 7)
         await self.bot.add_reaction(ctx.message, '\U00002705')
 
     @sudo.command(pass_context=True, name='eval')
