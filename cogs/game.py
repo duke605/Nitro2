@@ -46,7 +46,7 @@ class Game:
         e.add_field(name='Command User', value=ctx.message.author.mention)
         e.add_field(name='Command Channel', value=ctx.message.channel.mention)
 
-        error_log = discord.utils.find(lambda c: c.name == 'error_log', ctx.message.server.channels)
+        error_log = discord.utils.find(lambda c: c.name == 'error-log', ctx.message.server.channels)
         if error_log:
             await self.bot.send_message(error_log, None, embed=e)
         else:
