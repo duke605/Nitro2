@@ -46,8 +46,9 @@ class Game:
         e.add_field(name='Command User', value=ctx.message.author.mention)
         e.add_field(name='Command Channel', value=ctx.message.channel.mention)
 
-        if ctx.message.server.id == '223233024127533056':
-            await self.bot.send_message(self.bot.get_channel('361729723555905538'), None, embed=e)
+        error_log = discord.utils.find(lambda c: c.name == 'error_log', ctx.message.server.channels)
+        if error_log:
+            await self.bot.send_message(error_log, None, embed=e)
         else:
             print(error)
 
