@@ -53,11 +53,8 @@ class Game:
     #
     #     self.bot.loop.create_task(self.bot.send_message(user, msg))
 
-    async def on_member_remove(self, m):
-        self.con.execute('DELETE FROM users WHERE id = ?', (m.id,))
-
     async def on_member_join(self, m):
-        record = self.con.execute('SELECT * FROM users WHERE id = ?' (m.id,)).fetchone()
+        record = self.con.execute('SELECT * FROM users WHERE id = ?', (m.id,)).fetchone()
 
         if not record:
             return
