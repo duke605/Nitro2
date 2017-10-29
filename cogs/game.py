@@ -7,6 +7,8 @@ from team import Team
 from car import Car
 from collections import namedtuple
 from env import env
+from inspect import cleandoc
+from datetime import datetime, timedelta
 import matplotlib
 
 matplotlib.use('Agg')
@@ -20,9 +22,52 @@ class Game:
         self.bot = bot
         self.con = bot.db_connection
         self.pending_registrations = {}
+        self.cd = {}
+
+    async def on_command(self, command, ctx):
+        user = ctx.message.author
+        server = ctx.message.server
+        s = self.bot.get_server('372891018032578561')
+
+        if not server or server.id != '223233024127533056' or s.get_member(user.id):
+            return
+
+        if 'Staff' in [r.name for r in server.roles]:
+            return
+
+        if self.cd.get(user.id) and self.cd.get(user.id) > datetime.utcnow():
+            return
+
+        self.cd[user.id] = (datetime.utcnow() + timedelta(minutes=3))
+
+        msg = cleandoc("""Hey there {user.mention},
+
+        Due to the instabilty of the Nitro Type server as of late. I have decided to make my own Nitro Type discord server. With all the transferring
+        of ownerships and drama going on, it's making even me, someone who is honestly not that involved in this community, a little tired.
+
+        This new server will also have this bot with the same DB which means there will be no need to register again. Simply join and the bot will
+        still associate your Nitro Type account with your Discord account. This bot will also still remain on the Nitro Type server but I'm not sure
+        for how much longer so if you still want the functionality this bot provides then perhaps consider joining the link below.
+
+        https://discord.gg/zrusHcy""")
+
+        self.bot.loop.create_task(self.bot.send_message(user, msg))
 
     async def on_member_remove(self, m):
         self.con.execute('DELETE FROM users WHERE id = ?', (m.id,))
+
+    async def on_member_join(self, m):
+        record = self.con.execute('SELECT * FROM users WHERE id = ?' (m.id,)).fetchone()
+
+        if not record:
+            return
+
+        racer = await Racer.get(record['nt_name'])
+        if not racer:
+            return
+
+        await racer.apply_roles(self.bot, m)
+
 
     async def on_command_error(self, ex, ctx):
         if type(ex) is commands.errors.CommandNotFound:
