@@ -1,5 +1,6 @@
 from util import cancelable
 from racer import Racer
+from news import News
 import discord, asyncio
 
 
@@ -9,15 +10,51 @@ class Tasks:
         self.bot = bot
         self._tasks = []
 
+        self.bot.loop.create_task(self.add_task(self.update_racers()))
+        self.bot.loop.create_task(self.add_task(self.get_comments()))
+
     def __unload(self):
         for task in self._tasks:
             task.cancel()
 
-    def add_task(self, coro):
+    async def add_task(self, coro):
+        await self.bot.wait_until_ready()
+
         self._tasks.append(self.bot.loop.create_task(coro))
 
-    async def on_ready(self):
-        self.add_task(self.update_racers())
+    @cancelable
+    async def get_comments(self):
+        while not self.bot.is_closed:
+            try:
+                settings = self.bot.db_connection.execute('SELECT * FROM settings LIMIT 1').fetchone()
+                news = await News.get()
+
+                comments = list(filter(lambda c: c.id > settings['last_comment'], news.comments))
+
+                for c in comments:
+                    embed = discord.Embed(description=f'\u200B\n{c.comment}', title=c.racer.title, colour=c.colour)
+                    embed.set_author(name=c.racer.display_name, url=c.racer.url, icon_url=c.racer.flag_icon)
+                    embed.add_field(name='Posted', value=c.created_at.strftime('%b %d, %Y at %I:%M %p').replace(' 0', ' '))
+                    self.bot.db_connection.execute('UPDATE settings SET last_comment = ?', (c.id,))
+
+                    for s in self.bot.servers:
+                        news_channel = discord.utils.find(lambda channel: channel.name == 'nt-news', s.channels)
+                        if not news_channel:
+                            continue
+
+                        await self.bot.send_message(news_channel, embed=embed)
+
+                    await asyncio.sleep(1)
+
+                comments = None
+                news = None
+                settings = None
+                embed = None
+                news_channel = None
+            except Exception as e:
+                print(e)
+
+            await asyncio.sleep(60)
 
     @cancelable
     async def update_racers(self):
