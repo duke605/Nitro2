@@ -28,13 +28,10 @@ class Tasks:
             try:
                 settings = self.bot.db_connection.execute('SELECT * FROM settings LIMIT 1').fetchone()
                 news = await News.get()
-
                 comments = list(filter(lambda c: c.id > settings['last_comment'], news.comments))
 
                 for c in comments:
-                    embed = discord.Embed(description=f'\u200B\n{c.comment}', title=c.racer.title, colour=c.colour)
-                    embed.set_author(name=c.racer.display_name, url=c.racer.url, icon_url=c.racer.flag_icon)
-                    embed.add_field(name='Posted', value=c.created_at.strftime('%b %d, %Y at %I:%M %p').replace(' 0', ' '))
+                    embed = c.to_embed()
                     self.bot.db_connection.execute('UPDATE settings SET last_comment = ?', (c.id,))
 
                     for s in self.bot.servers:
@@ -45,6 +42,7 @@ class Tasks:
                         await self.bot.send_message(news_channel, embed=embed)
 
                     await asyncio.sleep(1)
+
 
                 comments = None
                 news = None

@@ -1,6 +1,6 @@
 from datetime import datetime
 from bs4 import BeautifulSoup
-import aiohttp, asyncio, re, json
+import aiohttp, asyncio, re, json, discord
 
 
 class News:
@@ -50,6 +50,24 @@ class News:
                 self.colour = 0x51ceff
             elif _dict['adminComment']:
                 self.colour = 0xff5151
+
+        @property
+        def colour(self):
+            if _dict['moderatorComment']:
+                self.colour = 0x51ceff
+            elif _dict['adminComment']:
+                self.colour = 0xff5151
+
+            return 0xcacbce
+
+        def to_embed(self):
+            embed = discord.Embed()
+            embed = discord.Embed(description=f'\u200B\n{self.comment}', title=c.racer.title, colour=self.colour)
+            embed.set_author(name=self.racer.display_name, url=self.racer.url, icon_url=self.racer.flag_icon)
+            embed.add_field(name='Posted', value=self.created_at.strftime('%b %d, %Y at %I:%M %p').replace(' 0', ' '))
+            embed.set_footer(text=c.id)
+
+            return embed
 
         class Racer:
 
