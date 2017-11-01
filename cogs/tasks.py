@@ -29,7 +29,7 @@ class Tasks:
                 settings = self.bot.db_connection.execute('SELECT * FROM settings LIMIT 1').fetchone()
                 news = await News.get()
                 comments = list(filter(lambda c: c.id > settings['last_comment'], news.comments))
-
+                
                 for c in comments:
                     embed = c.to_embed()
                     self.bot.db_connection.execute('UPDATE settings SET last_comment = ?', (c.id,))
