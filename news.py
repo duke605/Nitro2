@@ -65,7 +65,7 @@ class News:
             embed = discord.Embed(description=f'\u200B\n{self.comment}', title=c.racer.title, colour=self.colour)
             embed.set_author(name=self.racer.display_name, url=self.racer.url, icon_url=self.racer.flag_icon)
             embed.add_field(name='Posted', value=self.created_at.strftime('%b %d, %Y at %I:%M %p').replace(' 0', ' '))
-            embed.set_footer(text=c.id)
+            embed.set_footer(text=self.id)
 
             return embed
 
