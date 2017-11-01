@@ -59,7 +59,7 @@ class Game:
         if not record:
             return
 
-        racer = await Racer.get(record['nt_name'])
+        racer = await Racer.get(record['nitro_name'])
         if not racer:
             return
 
