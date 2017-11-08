@@ -1,7 +1,8 @@
 from util import cancelable
 from racer import Racer
 from news import News
-import discord, asyncio
+from io import StringIO
+import discord, asyncio, traceback
 
 
 class Tasks:
@@ -29,7 +30,7 @@ class Tasks:
                 settings = self.bot.db_connection.execute('SELECT * FROM settings LIMIT 1').fetchone()
                 news = await News.get()
                 comments = list(filter(lambda c: c.id > settings['last_comment'], news.comments))
-                
+
                 for c in comments:
                     embed = c.to_embed()
                     self.bot.db_connection.execute('UPDATE settings SET last_comment = ?', (c.id,))
@@ -43,14 +44,18 @@ class Tasks:
 
                     await asyncio.sleep(1)
 
-
                 comments = None
                 news = None
                 settings = None
                 embed = None
                 news_channel = None
-            except Exception as e:
-                print(e)
+            except Exception as ex:
+                with StringIO() as out:
+                    traceback.print_exception(type(ex), ex, ex.__traceback__, file=out)
+                    out.seek(0)
+                    error = out.read()
+
+                print(error)
 
             await asyncio.sleep(60)
 
